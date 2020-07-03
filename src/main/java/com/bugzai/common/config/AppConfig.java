@@ -32,6 +32,13 @@ public class AppConfig {
     @Value("${baidu.panorama.url}")
     private String baiduPanoramaUrl;
 
+    @Value("${baidu.search.location.url}")
+    private String baiduSearchLocationUrl;
+
+    public String getBaiduSearchLocationUrl() {
+        return baiduSearchLocationUrl;
+    }
+
     public String getBaiduPanoramaUrl() {
         return baiduPanoramaUrl;
     }

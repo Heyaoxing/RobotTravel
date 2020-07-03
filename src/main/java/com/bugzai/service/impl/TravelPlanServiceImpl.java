@@ -5,6 +5,8 @@ import com.bugzai.common.utils.HttpClientResult;
 import com.bugzai.common.utils.HttpClientUtils;
 import com.bugzai.dto.travelplan.DriveTravalPlanDto;
 import com.bugzai.dto.travelplan.DriveTravalPlanResultDto;
+import com.bugzai.dto.travelplan.LocationDto;
+import com.bugzai.dto.travelplan.LocationResultDto;
 import com.bugzai.service.TravelPlanService;
 import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,4 +49,31 @@ public class TravelPlanServiceImpl implements TravelPlanService {
         }
         return null;
     }
+
+
+    @Override
+    public LocationResultDto searchLocation(LocationDto dto) {
+        Map<String, String> params=new HashMap<>();
+        params.put("ak",appConfig.getBaiduMapAppkey());
+        params.put("query",dto.getQuery());
+        params.put("location",dto.getLocation().toString());
+        params.put("radius",dto.getRadius().toString());
+        params.put("output",dto.getOutput());
+        try {
+            HttpClientResult httpClientResult = HttpClientUtils.doGet(appConfig.getBaiduSearchLocationUrl(),params);
+            if(StringUtils.isEmpty(httpClientResult.getContent())){
+                return null;
+            }
+
+            Gson gson=new Gson();
+            LocationResultDto resultDto = gson.fromJson(httpClientResult.getContent(),LocationResultDto.class);
+            return resultDto;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+
+    }
+
 }
