@@ -1,9 +1,4 @@
-package com.bugzai.dto.travelplan;
-
-import com.bugzai.dto.Point;
-
-import java.util.ArrayList;
-import java.util.List;
+package com.bugzai.common.dto;
 
 /**
  * @Author: 002954

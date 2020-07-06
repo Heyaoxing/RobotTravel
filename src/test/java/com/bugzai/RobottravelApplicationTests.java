@@ -1,12 +1,9 @@
 package com.bugzai;
 
-import com.bugzai.dto.Point;
-import com.bugzai.dto.travelImage.PanoramaDto;
-import com.bugzai.dto.travelplan.DriveTravalPlanDto;
-import com.bugzai.dto.travelplan.DriveTravalPlanResultDto;
-import com.bugzai.dto.travelplan.LocationDto;
-import com.bugzai.dto.travelplan.LocationResultDto;
-import com.bugzai.service.TravelImageService;
+import com.bugzai.common.baidu.BaiduMapUtil;
+import com.bugzai.common.dto.*;
+import com.bugzai.common.utils.RedisUtil;
+import com.bugzai.common.utils.WeatherUtil;
 import com.bugzai.service.TravelPlanService;
 import com.google.gson.Gson;
 import org.junit.jupiter.api.Test;
@@ -17,10 +14,18 @@ import org.springframework.boot.test.context.SpringBootTest;
 class RobottravelApplicationTests {
 
     @Autowired
-    private TravelPlanService travelPlanService;
+    private BaiduMapUtil baiduMapUtil;
 
     @Autowired
-    private TravelImageService travelImageService;
+    private WeatherUtil weatherUtil;
+
+    @Autowired
+    private TravelPlanService travelPlanService;
+
+
+//    @Autowired
+//    private RedisUtil redisUtil;
+
     @Test
     void contextLoads() {
     }
@@ -30,7 +35,7 @@ class RobottravelApplicationTests {
         DriveTravalPlanDto dto=new DriveTravalPlanDto();
         dto.setOrigin(new Point(40.01116,116.339303));
         dto.setDestination(new Point(39.936404,116.452562));
-        DriveTravalPlanResultDto resultDto = travelPlanService.DriveTravalPlan(dto);
+        DriveTravalPlanResultDto resultDto = baiduMapUtil.DriveTravalPlan(dto);
         Gson gson=new Gson();
         System.out.println(gson.toJson(resultDto));
     }
@@ -39,7 +44,7 @@ class RobottravelApplicationTests {
     public void testPanorama(){
         PanoramaDto dto=new PanoramaDto();
         dto.setLocation(new Point(40.04778,116.313393));
-        travelImageService.getPanorama(dto);
+        baiduMapUtil.getPanorama(dto);
         System.out.println("test");
     }
 
@@ -48,7 +53,27 @@ class RobottravelApplicationTests {
         LocationDto dto=new LocationDto();
         dto.setLocation(new Point(39.991903553605,116.38538441268));
         dto.setQuery("酒店");
-        LocationResultDto resultDto = travelPlanService.searchLocation(dto);
+        LocationResultDto resultDto = baiduMapUtil.searchLocation(dto);
         System.out.println(new Gson().toJson(resultDto));
     }
+
+    @Test
+    public void testWeatherInfo(){
+        WeatherDto dto=new WeatherDto();
+        dto.setLocation(new Point(39.990987727244,116.38564267552));
+        WeatherResultDto resultDto =  weatherUtil.getWeatherInfo(dto);
+        System.out.println(new Gson().toJson(resultDto));
+    }
+
+    @Test
+    public void testWalk(){
+        travelPlanService.walk();
+       System.out.println("end");
+    }
+//
+//    @Test
+//    public void test(){
+//        redisUtil.set("test","tttt");
+//       System.out.println(redisUtil.get("test"));
+//    }
 }

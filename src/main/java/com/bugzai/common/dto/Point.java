@@ -1,4 +1,4 @@
-package com.bugzai.dto;
+package com.bugzai.common.dto;
 
 import lombok.Data;
 

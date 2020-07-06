@@ -1,9 +1,6 @@
-package com.bugzai.dto.travelplan;
+package com.bugzai.common.dto;
 
-import com.bugzai.dto.Point;
 import lombok.Data;
-
-import java.io.Serializable;
 
 /**
  * @Author: 002954

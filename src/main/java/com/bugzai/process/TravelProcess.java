@@ -1,10 +1,9 @@
 package com.bugzai.process;
 
-import handler.AbstractHandler;
-import handler.HandlerMessage;
-import org.springframework.beans.factory.InitializingBean;
-
-import java.util.Objects;
+import com.bugzai.handler.AbstractHandler;
+import com.bugzai.handler.WalkHandler;
+import com.bugzai.handler.WeatherHandler;
+import org.springframework.stereotype.Component;
 
 /**
  * @Title: TravelProcess.java
@@ -13,32 +12,13 @@ import java.util.Objects;
  * @Date: 2020/7/3 18:24
  * @Version V1.0
  */
-public abstract class TravelProcess implements BaseProcess, InitializingBean {
+@Component("travelProcess")
+public  class TravelProcess extends AbstractProcess {
 
-    private AbstractHandler doHandler;
 
     @Override
-    public void process(){
-        HandlerMessage message=new HandlerMessage();
-        if(Objects.nonNull(doHandler)){
-            message = doHandler.doNext(message);
-        }
-
-        if(Objects.isNull(message)||!message.getToNext()){
-            return;
-        }
-
-
+    protected AbstractHandler getHandler() {
+        AbstractHandler walkHandler=new WalkHandler();
+        return walkHandler;
     }
-
-
-
-
-    protected abstract AbstractHandler getHandler();
-
-    @Override
-    public void afterPropertiesSet(){
-        doHandler=this.getHandler();
-    }
-
 }

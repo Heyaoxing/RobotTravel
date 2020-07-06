@@ -1,4 +1,4 @@
-package com.bugzai.dto.travelImage;
+package com.bugzai.common.dto;
 
 /**
  * @Title: PanoramaResultDto.java

@@ -1,4 +1,4 @@
-package com.bugzai.dto.travelplan;
+package com.bugzai.common.dto;
 
 import lombok.Data;
 

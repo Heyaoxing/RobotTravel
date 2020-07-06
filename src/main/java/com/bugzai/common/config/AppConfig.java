@@ -35,6 +35,28 @@ public class AppConfig {
     @Value("${baidu.search.location.url}")
     private String baiduSearchLocationUrl;
 
+    @Value("${heWeather.url}")
+    private String heWeatherUrl;
+    @Value("${heWeather.key}")
+    private String heWeatherKey;
+
+    /**
+     * 多少分钟更新一次天气
+     */
+    @Value("${update.weather.minutes}")
+    private Integer updateWeatherMinutes=30;
+
+
+
+    public String getHeWeatherUrl() {
+        return heWeatherUrl;
+    }
+
+    public String getHeWeatherKey() {
+        return heWeatherKey;
+    }
+
+
     public String getBaiduSearchLocationUrl() {
         return baiduSearchLocationUrl;
     }
@@ -48,5 +70,9 @@ public class AppConfig {
 
     public String getBaiduMapAppkey() {
         return baiduMapAppkey;
+    }
+
+    public Integer getUpdateWeatherMinutes() {
+        return updateWeatherMinutes;
     }
 }

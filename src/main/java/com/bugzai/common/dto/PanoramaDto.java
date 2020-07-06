@@ -1,6 +1,5 @@
-package com.bugzai.dto.travelImage;
+package com.bugzai.common.dto;
 
-import com.bugzai.dto.Point;
 import lombok.Data;
 
 import java.io.Serializable;
