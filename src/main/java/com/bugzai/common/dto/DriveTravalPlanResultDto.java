@@ -1,8 +1,11 @@
 package com.bugzai.common.dto;
 
+import lombok.Data;
+
 /**
  * @Author: 002954
  */
+@Data
 public class DriveTravalPlanResultDto{
 
     /**

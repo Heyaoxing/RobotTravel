@@ -1,12 +1,15 @@
 package com.bugzai.handler;
 
 import com.bugzai.common.config.AppConfig;
+import com.bugzai.common.enums.TravelStatusEnum;
 import com.bugzai.common.utils.RedisUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @Title: WalkHandler.java
@@ -15,25 +18,20 @@ import javax.annotation.Resource;
  * @Date: 2020/7/6 17:51
  * @Version V1.0
  */
+@Component("walkHandler")
 @Slf4j
 public class WalkHandler extends AbstractHandler{
-//    @Autowired
-//    private RedisUtil redisUtil;
 
     @Autowired
-    private AppConfig appConfig;
+    private RedisUtil redisUtil;
+
 
     @Override
-    protected HandlerMessage handler(HandlerMessage message) {
-//        if(message.getMovingTime()>=3){
-//            message.setToNext(false);
-//            return message;
-//        }
-//
-//        message.setMovingTime(message.getMovingTime()+1);
-//        redisUtil.set("walk",message.getMovingTime().toString());
-//        log.info("当前第几步："+redisUtil.get("walk"));
-        log.info(appConfig.getHeWeatherKey());
+    protected HandlerMessage handler(HandlerMessage message) throws InterruptedException {
+        message.setTravelStatus(TravelStatusEnum.WALKING.getStatus());
+        TimeUnit.MILLISECONDS.sleep(message.getTravelCost());
+        message.setMovingTime(message.getMovingTime()+1);
+        message.setCurrentLocation(message.getNextLocation());
         return message;
     }
 }

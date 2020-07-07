@@ -37,7 +37,7 @@ public class BaiduMapUtil {
      * @param dto
      * @return
      */
-    public DriveTravalPlanResultDto DriveTravalPlan(DriveTravalPlanDto dto) {
+    public DriveTravalPlanResultDto driveTravalPlan(DriveTravalPlanDto dto) {
         Map<String, String> params=new HashMap<>();
         params.put("origin",dto.getOrigin().toString());
         params.put("destination",dto.getDestination().toString());

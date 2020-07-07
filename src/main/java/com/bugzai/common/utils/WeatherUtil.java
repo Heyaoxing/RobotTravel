@@ -5,6 +5,7 @@ import com.bugzai.common.dto.DriveTravalPlanResultDto;
 import com.bugzai.common.dto.WeatherDto;
 import com.bugzai.common.dto.WeatherResultDto;
 import com.google.gson.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -20,6 +21,7 @@ import java.util.Map;
  * @Version V1.0
  */
 @Component
+@Slf4j
 public class WeatherUtil {
 
     @Autowired
@@ -44,7 +46,7 @@ public class WeatherUtil {
             return resultDto;
 
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("getWeatherInfo:",e);
         }
         return null;
     }

@@ -18,25 +18,25 @@ public abstract class AbstractProcess implements BaseProcess, InitializingBean {
     private AbstractHandler doHandler;
 
     @Override
-    public void process(){
-        HandlerMessage message=new HandlerMessage();
-        if(Objects.nonNull(doHandler)){
+    public void process() {
+        HandlerMessage message = this.wrapMessage();
+        if (Objects.nonNull(message) && Objects.nonNull(doHandler)) {
             message = doHandler.doNext(message);
         }
 
-        if(Objects.isNull(message)||!message.getToNext()){
+        if (Objects.isNull(message) || !message.getToNext()) {
             return;
         }
     }
 
-
+    protected abstract HandlerMessage wrapMessage();
 
 
     protected abstract AbstractHandler getHandler();
 
     @Override
-    public void afterPropertiesSet(){
-        doHandler=this.getHandler();
+    public void afterPropertiesSet() {
+        doHandler = this.getHandler();
     }
 
 }

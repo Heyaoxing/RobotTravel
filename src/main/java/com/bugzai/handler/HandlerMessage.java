@@ -17,6 +17,24 @@ import java.util.Date;
  */
 @Data
 public class HandlerMessage implements Serializable {
+    /**
+     * 是否进行下一步
+     */
+    private Boolean toNext=true;
+
+    /**
+     * 状态
+     * 1：准备状态
+     * 2：进行中
+     * 3：完成
+     * @see  com.bugzai.common.enums.TravelStatusEnum
+     */
+    private Integer travelStatus;
+    /**
+     * 旅途id
+     * 每一段旅途id都不一样
+     */
+    private String travelId;
 
     /**
      * 当前位置
@@ -32,10 +50,12 @@ public class HandlerMessage implements Serializable {
      * 下一个旅行地点所需耗时
      */
     private Long travelCost;
+
     /**
-     * 是否进行下一步
+     * 下一个旅行地点距离米
      */
-    private Boolean toNext=true;
+    private Integer distance;
+
     /**
      * 上一步传递的信息
      */

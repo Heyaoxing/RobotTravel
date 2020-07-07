@@ -7,7 +7,9 @@ import com.bugzai.common.dto.WeatherNowDto;
 import com.bugzai.common.dto.WeatherResultDto;
 import com.bugzai.common.utils.DateUtil;
 import com.bugzai.common.utils.WeatherUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.Date;
 import java.util.Objects;
@@ -19,6 +21,8 @@ import java.util.Objects;
  * @Date: 2020/7/3 18:39
  * @Version V1.0
  */
+@Slf4j
+@Component("weatherHandler")
 public class WeatherHandler extends AbstractHandler {
 
     @Autowired
@@ -38,7 +42,7 @@ public class WeatherHandler extends AbstractHandler {
             return message;
         }
 
-
+        message.setDoWeather(false);
         WeatherDto dto = new WeatherDto();
         dto.setLocation(message.getCurrentLocation());
         WeatherResultDto resultDto = weatherUtil.getWeatherInfo(dto);

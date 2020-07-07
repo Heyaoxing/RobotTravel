@@ -18,6 +18,7 @@ import java.util.Set;
  * @Date: 2020/7/6 18:40
  * @Version V1.0
  */
+@Component
 public class RedisUtil {
     private JedisPool pool = null;
 
