@@ -1,10 +1,9 @@
 package com.bugzai.service;
 
 /**
- * @Author: 002954
+ * @Author:
  */
 public interface TravelImageService {
-
 
 
 }
