@@ -39,6 +39,12 @@ public class StateMachineBuilder<TEvent  extends Comparable,TState  extends Comp
     }
 
     @Override
+    public IGotoSyntax<TEvent, TState> On(TEvent evt) {
+        _onEvent = evt;
+        return this;
+    }
+
+    @Override
     public IOnSyntax<TEvent, TState> Goto(TState targetState) {
         if (!_machine.TransitionRules.containsKey(_fromState))
         {
@@ -49,10 +55,4 @@ public class StateMachineBuilder<TEvent  extends Comparable,TState  extends Comp
         return this;
     }
 
-
-    @Override
-    public IGotoSyntax<TEvent, TState> On(TEvent evt) {
-        _onEvent = evt;
-        return this;
-    }
 }

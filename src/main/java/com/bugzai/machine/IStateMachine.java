@@ -15,11 +15,11 @@ public abstract class IStateMachine<TEvent extends Comparable, TState extends Co
     String name;
 
 
-    abstract boolean fire(TEvent event);
+    public abstract boolean fire(TEvent event);
 
-    abstract void reset();
+    public abstract void reset();
 
-    abstract void start(TState initState);
+    public abstract void start(TState initState);
 
 
     protected  TState CurrentStateId;

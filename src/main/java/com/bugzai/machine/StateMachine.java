@@ -15,6 +15,17 @@ public class StateMachine<TEvent extends Comparable, TState extends Comparable> 
 
     private TState _initState;
 
+    public ActionMessage getMessage() {
+        return message;
+    }
+
+    private ActionMessage message;
+    public StateMachine(ActionMessage message){
+        this.message=message;
+        this.message.setStateMachine(this);
+    }
+
+
 
     @Override
    public boolean fire(TEvent event) {
@@ -33,7 +44,6 @@ public class StateMachine<TEvent extends Comparable, TState extends Comparable> 
     }
 
     private boolean FireInternal(TEvent evt) {
-        TState oldState = CurrentStateId;
 
         if (!TransitionRules.containsKey(CurrentStateId) || !TransitionRules.get(CurrentStateId).containsKey(evt)) {
             return false;
@@ -48,7 +58,7 @@ public class StateMachine<TEvent extends Comparable, TState extends Comparable> 
         CurrentStateId =(TState) transition.getTo();
 
         if (States.containsKey(transition.getTo()) && States.get(transition.getTo()).EnterAction != null) {
-            States.get(transition.getTo()).EnterAction.Invoke();
+            States.get(transition.getTo()).EnterAction.Invoke(message);
         }
         return true;
     }
