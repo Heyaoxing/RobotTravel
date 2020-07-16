@@ -2,6 +2,7 @@ package com.bugzai.handler;
 
 import com.bugzai.common.dto.Point;
 import com.bugzai.common.dto.WeatherNowDto;
+import com.bugzai.machine.ActionMessage;
 import com.bugzai.process.BaseProcess;
 import lombok.Data;
 
@@ -16,7 +17,7 @@ import java.util.Date;
  * @Version V1.0
  */
 @Data
-public class HandlerMessage implements Serializable {
+public class HandlerMessage extends ActionMessage implements Serializable {
     /**
      * 是否进行下一步
      */

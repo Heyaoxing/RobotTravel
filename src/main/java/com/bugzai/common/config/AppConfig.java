@@ -40,6 +40,15 @@ public class AppConfig {
     @Value("${heWeather.key}")
     private String heWeatherKey;
 
+    @Value("${robot.code}")
+    private String robotCode;
+
+    @Value("${robot.name}")
+    private String robotName;
+
+    @Value("${robot.location}")
+    private String robotLocation;
+
     /**
      * 多少分钟更新一次天气
      */
@@ -74,5 +83,15 @@ public class AppConfig {
 
     public Integer getUpdateWeatherMinutes() {
         return updateWeatherMinutes;
+    }
+
+    public String getRobotCode() {
+        return robotCode;
+    }
+    public String getRobotName() {
+        return robotName;
+    }
+    public String getRobotLocation() {
+        return robotLocation;
     }
 }

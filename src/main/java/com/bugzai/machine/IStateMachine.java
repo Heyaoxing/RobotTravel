@@ -14,6 +14,7 @@ public abstract class IStateMachine<TEvent extends Comparable, TState extends Co
 
     String name;
 
+    public abstract IStateMachine init(ActionMessage actionMessage);
 
     public abstract boolean fire(TEvent event);
 

@@ -1,14 +1,13 @@
 package com.bugzai.handler;
 
-import com.bugzai.common.config.AppConfig;
 import com.bugzai.common.enums.TravelStatusEnum;
-import com.bugzai.common.utils.RedisUtil;
+import com.bugzai.machine.ActionMessage;
+import com.bugzai.strategy.RobotCache;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.Resource;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -22,16 +21,13 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class WalkHandler extends AbstractHandler{
 
-    @Autowired
-    private RedisUtil redisUtil;
-
-
     @Override
-    protected HandlerMessage handler(HandlerMessage message) throws InterruptedException {
+    protected ActionMessage handler(ActionMessage message) throws InterruptedException {
         message.setTravelStatus(TravelStatusEnum.WALKING.getStatus());
         TimeUnit.MILLISECONDS.sleep(message.getTravelCost());
         message.setMovingTime(message.getMovingTime()+1);
         message.setCurrentLocation(message.getNextLocation());
+        RobotCache.getInstance().updateLocation(message.getNextLocation());
         return message;
     }
 }

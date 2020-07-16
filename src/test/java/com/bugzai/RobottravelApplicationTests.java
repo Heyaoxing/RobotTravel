@@ -2,14 +2,13 @@ package com.bugzai;
 
 import com.bugzai.common.baidu.BaiduMapUtil;
 import com.bugzai.common.dto.*;
-import com.bugzai.common.utils.RedisUtil;
 import com.bugzai.common.utils.WeatherUtil;
 import com.bugzai.service.TravelPlanService;
 import com.google.gson.Gson;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.util.StringUtils;
+import org.springframework.data.redis.core.StringRedisTemplate;
 
 import java.util.UUID;
 
@@ -25,9 +24,8 @@ class RobottravelApplicationTests {
     @Autowired
     private TravelPlanService travelPlanService;
 
-
     @Autowired
-    private RedisUtil redisUtil;
+    private StringRedisTemplate stringRedisTemplate;
 
     @Test
     void contextLoads() {
@@ -55,7 +53,7 @@ class RobottravelApplicationTests {
     public void testSearchLocation() {
         LocationDto dto = new LocationDto();
         dto.setLocation(new Point(39.991903553605, 116.38538441268));
-        dto.setQuery("酒店");
+        dto.setQuery("景点");
         LocationResultDto resultDto = baiduMapUtil.searchLocation(dto);
         System.out.println(new Gson().toJson(resultDto));
     }
@@ -78,13 +76,13 @@ class RobottravelApplicationTests {
     public void test01() {
 
         for (int i = 0; i < 5; i++) {
-            redisUtil.rpush("queue", String.valueOf(i));
+            stringRedisTemplate.opsForList().rightPush("queue", String.valueOf(i));
         }
 
         for (int i = 0; i < 10; i++) {
-            System.out.println(redisUtil.lpop("queue"));
+            System.out.println(stringRedisTemplate.opsForList().leftPop("queue"));
         }
-        System.out.println(redisUtil.get("end"));
+        System.out.println(stringRedisTemplate.opsForValue().get("end"));
     }
 
     @Test

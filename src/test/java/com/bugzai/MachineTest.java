@@ -7,6 +7,7 @@ import com.google.gson.Gson;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -36,12 +37,13 @@ public class MachineTest {
 
     @Test
     public void test() throws InterruptedException {
-        CustomerTake customerTake = new CustomerTake();
 
+        CustomerTake customerTake = new CustomerTake();
         ActionMessage actionMessage = new ActionMessage();
         actionMessage.setName("领券");
 
-        StateMachine machine = new StateMachine<TestEvent, TestState>(actionMessage);
+        StateMachine machine = new StateMachine<TestEvent, TestState>();
+        machine.init(actionMessage);
 
         machine.In(TestState.State1).OnEnterState(customerTake::test).On(TestEvent.Event2).Goto(TestState.State2);
 

@@ -2,6 +2,7 @@ package com.bugzai.process;
 
 import com.bugzai.handler.AbstractHandler;
 import com.bugzai.handler.HandlerMessage;
+import com.bugzai.machine.ActionMessage;
 import org.springframework.beans.factory.InitializingBean;
 
 import java.util.Objects;
@@ -19,7 +20,7 @@ public abstract class AbstractProcess implements BaseProcess, InitializingBean {
 
     @Override
     public void process() {
-        HandlerMessage message = this.wrapMessage();
+        ActionMessage message = this.wrapMessage();
         if (Objects.nonNull(message) && Objects.nonNull(doHandler)) {
             message = doHandler.doNext(message);
         }

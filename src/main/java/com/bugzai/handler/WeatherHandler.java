@@ -7,6 +7,7 @@ import com.bugzai.common.dto.WeatherNowDto;
 import com.bugzai.common.dto.WeatherResultDto;
 import com.bugzai.common.utils.DateUtil;
 import com.bugzai.common.utils.WeatherUtil;
+import com.bugzai.machine.ActionMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -31,7 +32,7 @@ public class WeatherHandler extends AbstractHandler {
     private AppConfig appConfig;
 
     @Override
-    protected HandlerMessage handler(HandlerMessage message) {
+    protected ActionMessage handler(ActionMessage message) {
         if (!message.getDoWeather()) {
             return message;
         }

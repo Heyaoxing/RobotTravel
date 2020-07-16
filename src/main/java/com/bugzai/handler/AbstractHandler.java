@@ -1,5 +1,6 @@
 package com.bugzai.handler;
 
+import com.bugzai.machine.ActionMessage;
 import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
 
@@ -16,7 +17,7 @@ public abstract class AbstractHandler {
     protected AbstractHandler nextHandler;
 
 
-    public HandlerMessage doNext(HandlerMessage message) {
+    public ActionMessage doNext(ActionMessage message) {
         message = this.wrapHandler(message);
         if (message != null && message.getToNext()) {
             return nextHandler.doNext(message);
@@ -24,19 +25,19 @@ public abstract class AbstractHandler {
         return message;
     }
 
-    private HandlerMessage wrapHandler(HandlerMessage message) {
+    private ActionMessage wrapHandler(ActionMessage message) {
         try {
             message = this.handler(message);
-            log.info(new Gson().toJson(message));
+            log.info(message.toString());
         } catch (Throwable e) {
             message.setToNext(false);
             message.setPreviousMessage(e.getMessage());
-            log.error("handlerMessage : ", e);
+            log.error("ActionMessage : ", e);
         }
         return message;
     }
 
-    protected abstract HandlerMessage handler(HandlerMessage message) throws InterruptedException;
+    protected abstract ActionMessage handler(ActionMessage message) throws InterruptedException;
 
     public AbstractHandler setNextHandler(AbstractHandler nextHandler) {
         this.nextHandler = nextHandler;
@@ -48,7 +49,7 @@ public abstract class AbstractHandler {
      *
      * @param message
      */
-    protected void stopNext(HandlerMessage message) {
+    protected void stopNext(ActionMessage message) {
         message.setToNext(false);
     }
 }

@@ -20,12 +20,13 @@ public class StateMachine<TEvent extends Comparable, TState extends Comparable> 
     }
 
     private ActionMessage message;
-    public StateMachine(ActionMessage message){
-        this.message=message;
+
+    @Override
+    public IStateMachine init(ActionMessage actionMessage) {
+        this.message=actionMessage;
         this.message.setStateMachine(this);
+        return this;
     }
-
-
 
     @Override
    public boolean fire(TEvent event) {
