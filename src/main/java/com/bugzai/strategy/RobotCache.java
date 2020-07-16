@@ -70,17 +70,20 @@ public class RobotCache {
     public  void init() {
         String robotStr = stringRedisTemplate.opsForValue().get(appConfig.getRobotCode());
         if (!StringUtils.isEmpty(robotStr)) {
+            updateActionStatus(RobotStatus.ActionStatusEnum.REST);
             return;
         }
 
         RedisRobotInfo redisRobotInfo = new RedisRobotInfo();
         redisRobotInfo.setCode(appConfig.getRobotCode());
         redisRobotInfo.setName(appConfig.getRobotName());
-        redisRobotInfo.setActionStatue(RobotStatus.ActionStatusEnum.DAZE.getStatus());
+        redisRobotInfo.setActionStatue(RobotStatus.ActionStatusEnum.REST.getStatus());
         redisRobotInfo.setBodyStatus(RobotStatus.BodyStatusEnum.NORMAL.getStatus());
         String[] point = appConfig.getRobotLocation().split(",");
         redisRobotInfo.setLoction(new Point(Double.parseDouble(point[0]),Double.parseDouble(point[1])));
         blockingQueue.add(redisRobotInfo);
+        RobotStrategy.getInstance().updateActionStatus(redisRobotInfo);
+
     }
 
     public void updateLocation(Point location) {
@@ -88,5 +91,13 @@ public class RobotCache {
         RedisRobotInfo redisRobotInfo=new Gson().fromJson(robotStr,RedisRobotInfo.class);
         redisRobotInfo.setLoction(location);
         blockingQueue.add(redisRobotInfo);
+    }
+
+    public void updateActionStatus(RobotStatus.ActionStatusEnum actionStatus){
+        String robotStr = stringRedisTemplate.opsForValue().get(appConfig.getRobotCode());
+        RedisRobotInfo redisRobotInfo=new Gson().fromJson(robotStr,RedisRobotInfo.class);
+        redisRobotInfo.setActionStatue(actionStatus.getStatus());
+        blockingQueue.add(redisRobotInfo);
+        RobotStrategy.getInstance().updateActionStatus(redisRobotInfo);
     }
 }

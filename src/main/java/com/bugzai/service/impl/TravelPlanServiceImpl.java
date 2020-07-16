@@ -11,7 +11,7 @@ import javax.annotation.Resource;
 /**
  * @Author: bugzai
  */
-@Service
+@Service("travelPlanService")
 public class TravelPlanServiceImpl implements TravelPlanService {
 
 

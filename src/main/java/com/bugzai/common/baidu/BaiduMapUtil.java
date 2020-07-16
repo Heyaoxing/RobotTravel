@@ -25,7 +25,7 @@ import java.util.Map;
  * @Date: 2020/7/6 10:23
  * @Version V1.0
  */
-@Component
+@Component("baiduMapUtil")
 public class BaiduMapUtil {
     @Autowired
     private AppConfig appConfig;

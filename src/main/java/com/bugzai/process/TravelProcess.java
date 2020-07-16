@@ -1,11 +1,9 @@
 package com.bugzai.process;
 
 import com.bugzai.common.baidu.BaiduMapUtil;
+import com.bugzai.common.config.AppConfig;
 import com.bugzai.common.constants.RedisKeyConstants;
-import com.bugzai.common.dto.DriveTravalPlanDto;
-import com.bugzai.common.dto.DriveTravalPlanResultDto;
-import com.bugzai.common.dto.Point;
-import com.bugzai.common.dto.RedisWalkStep;
+import com.bugzai.common.dto.*;
 import com.bugzai.common.utils.SpringUtil;
 import com.bugzai.handler.AbstractHandler;
 import com.bugzai.handler.HandlerMessage;
@@ -36,18 +34,26 @@ public class TravelProcess extends AbstractProcess {
 
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
+
+    @Autowired
+    private AppConfig appConfig;
+
     @Override
     protected HandlerMessage wrapMessage() {
+        String robotStr = stringRedisTemplate.opsForValue().get(RedisKeyConstants.TRAVEL_PLAN_KEY);
+        RedisTravekPlan redisTravekPlan=new Gson().fromJson(robotStr,RedisTravekPlan.class);
+
         DriveTravalPlanDto dto = new DriveTravalPlanDto();
-        dto.setOrigin(new Point(40.01116, 116.339303));
-        dto.setDestination(new Point(39.936404, 116.452562));
+        dto.setOrigin(redisTravekPlan.getOrigin());
+        dto.setDestination(redisTravekPlan.getDestination());
+
         DriveTravalPlanResultDto resultDto = baiduMapUtil.driveTravalPlan(dto);
 
         if (Objects.isNull(resultDto) || resultDto.getStatus() != 0) {
             return null;
         }
 
-        String travelId = UUID.randomUUID().toString().replace("-", "");
+        String walkKey= RedisKeyConstants.TRAVEL_WALK_ID_KEY + redisTravekPlan.getTravelId();
         AtomicInteger step = new AtomicInteger(1);
         resultDto.getResult().getRoutes().forEach(p -> {
             p.getSteps().forEach(t ->
@@ -61,15 +67,15 @@ public class TravelProcess extends AbstractProcess {
                     walkStep.setLatitude(Double.parseDouble(locations[1]));
                     walkStep.setStep(step.incrementAndGet());
                     walkStep.setDuration(cost);
-                    stringRedisTemplate.opsForList().rightPush(RedisKeyConstants.TRAVEL_WALK_ID_KEY + travelId, new Gson().toJson(walkStep));
-                    stringRedisTemplate.expire(RedisKeyConstants.TRAVEL_WALK_ID_KEY + travelId,2, TimeUnit.HOURS);
+                    stringRedisTemplate.opsForList().rightPush(walkKey, new Gson().toJson(walkStep));
+                    stringRedisTemplate.expire(walkKey,2, TimeUnit.HOURS);
                 }
             });
         });
 
         HandlerMessage handlerMessage = new HandlerMessage();
         handlerMessage.setCurrentLocation(dto.getOrigin());
-        handlerMessage.setTravelId(travelId);
+        handlerMessage.setTravelId(redisTravekPlan.getTravelId());
         return handlerMessage;
     }
 

@@ -17,8 +17,7 @@ public class RobotStatus {
         SLEEP(0, "睡觉"),
         REST(1, "休息"),
         WALK(2, "走路"),
-        EAT(3, "吃饭"),
-        DAZE(4, "发呆");
+        EAT(3, "吃饭");
 
         @Getter
         private Integer status;

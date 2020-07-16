@@ -4,9 +4,11 @@ import com.bugzai.common.constants.RedisKeyConstants;
 import com.bugzai.common.dto.Point;
 import com.bugzai.common.dto.RedisWalkStep;
 import com.bugzai.common.enums.BaseEvent.ReadyActionEnum;
+import com.bugzai.common.enums.RobotStatus;
 import com.bugzai.common.enums.TravelStatusEnum;
 import com.bugzai.machine.Action;
 import com.bugzai.machine.ActionMessage;
+import com.bugzai.strategy.RobotCache;
 import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
@@ -79,5 +81,6 @@ public class ReadyComponent implements InitializingBean {
     public void stop(ActionMessage message) {
         message.setPreviousMessage("没有需要位移的路程");
         message.setToNext(false);
+        RobotCache.getInstance().updateActionStatus(RobotStatus.ActionStatusEnum.REST);
     }
 }
