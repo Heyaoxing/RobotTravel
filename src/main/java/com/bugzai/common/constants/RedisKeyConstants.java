@@ -14,7 +14,9 @@ public class RedisKeyConstants {
     public static  String TRAVEL_WALK_ID_KEY="travel:walk:id:";
 
     /**
-     * l
+     *
      */
-    public static  String TRAVEL_PLAN_KEY="travel:plan:key";
+    public static  String TRAVEL_PLAN_KEY="travel:plan:key:";
+
+    public static String ROBOT_CURRENT_INFO_KEY="robot:current:info:";
 }

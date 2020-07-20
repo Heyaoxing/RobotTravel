@@ -1,6 +1,7 @@
 package com.bugzai.strategy;
 
 import com.bugzai.common.config.AppConfig;
+import com.bugzai.common.constants.RedisKeyConstants;
 import com.bugzai.common.dto.Point;
 import com.bugzai.common.dto.RedisRobotInfo;
 import com.bugzai.common.enums.RobotStatus;
@@ -64,11 +65,11 @@ public class RobotCache {
 
     private void process(RedisRobotInfo redisRobotInfo) {
         redisRobotInfo.setUpdateTm(new Date());
-        stringRedisTemplate.opsForValue().set(redisRobotInfo.getCode(), new Gson().toJson(redisRobotInfo));
+        stringRedisTemplate.opsForValue().set(RedisKeyConstants.ROBOT_CURRENT_INFO_KEY+redisRobotInfo.getCode(), new Gson().toJson(redisRobotInfo));
     }
 
     public  void init() {
-        String robotStr = stringRedisTemplate.opsForValue().get(appConfig.getRobotCode());
+        String robotStr = stringRedisTemplate.opsForValue().get(RedisKeyConstants.ROBOT_CURRENT_INFO_KEY+appConfig.getRobotCode());
         if (!StringUtils.isEmpty(robotStr)) {
             updateActionStatus(RobotStatus.ActionStatusEnum.REST);
             return;
@@ -87,14 +88,20 @@ public class RobotCache {
     }
 
     public void updateLocation(Point location) {
-        String robotStr = stringRedisTemplate.opsForValue().get(appConfig.getRobotCode());
+        String robotStr = stringRedisTemplate.opsForValue().get(RedisKeyConstants.ROBOT_CURRENT_INFO_KEY+appConfig.getRobotCode());
+        if(StringUtils.isEmpty(robotStr)){
+            return;
+        }
         RedisRobotInfo redisRobotInfo=new Gson().fromJson(robotStr,RedisRobotInfo.class);
         redisRobotInfo.setLoction(location);
         blockingQueue.add(redisRobotInfo);
     }
 
     public void updateActionStatus(RobotStatus.ActionStatusEnum actionStatus){
-        String robotStr = stringRedisTemplate.opsForValue().get(appConfig.getRobotCode());
+        String robotStr = stringRedisTemplate.opsForValue().get(RedisKeyConstants.ROBOT_CURRENT_INFO_KEY+appConfig.getRobotCode());
+        if(StringUtils.isEmpty(robotStr)){
+            return;
+        }
         RedisRobotInfo redisRobotInfo=new Gson().fromJson(robotStr,RedisRobotInfo.class);
         redisRobotInfo.setActionStatue(actionStatus.getStatus());
         blockingQueue.add(redisRobotInfo);
