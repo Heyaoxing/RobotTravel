@@ -4,7 +4,7 @@ import com.bugzai.service.TravelImageService;
 import org.springframework.stereotype.Service;
 
 /**
- * @Author: 002954
+ * @Author:
  */
 @Service
 public class TravelImageServiceImpl implements TravelImageService {

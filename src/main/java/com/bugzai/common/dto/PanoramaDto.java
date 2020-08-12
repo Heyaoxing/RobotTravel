@@ -19,11 +19,11 @@ public class PanoramaDto implements Serializable {
     /**
      * 图片宽度，范围[10,1024]
      */
-    private Integer width=1024;
+    private Integer width=512;
     /**
      * 图片高度，范围[10,512]
      */
-    private Integer height=512;
+    private Integer height=256;
     /**
      * 水平视角，范围[0,360]
      */

@@ -1,8 +1,6 @@
 package com.bugzai.strategy;
 
-import ch.qos.logback.core.util.TimeUtil;
 import com.bugzai.common.baidu.BaiduMapUtil;
-import com.bugzai.common.config.AppConfig;
 import com.bugzai.common.constants.RedisKeyConstants;
 import com.bugzai.common.dto.*;
 import com.bugzai.common.enums.RobotStatus;
@@ -11,7 +9,10 @@ import com.bugzai.common.utils.SpringUtil;
 import com.bugzai.service.TravelPlanService;
 import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.geo.Circle;
+import org.springframework.data.geo.GeoResults;
+import org.springframework.data.redis.connection.RedisGeoCommands;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.util.CollectionUtils;
 
@@ -51,12 +52,14 @@ public class RobotStrategy {
 
 
     private BaiduMapUtil baiduMapUtil;
-    private final StringRedisTemplate stringRedisTemplate;
     private TravelPlanService travelPlanService;
+    private RedisTemplate<Object, Object> redisTemplate;
+    private StringRedisTemplate stringRedisTemplate;
 
     public RobotStrategy() {
         baiduMapUtil = SpringUtil.getBean("baiduMapUtil", BaiduMapUtil.class);
         stringRedisTemplate = SpringUtil.getBean("stringRedisTemplate", StringRedisTemplate.class);
+        redisTemplate = SpringUtil.getBean("redisTemplate", RedisTemplate.class);
         travelPlanService = SpringUtil.getBean("travelPlanService", TravelPlanService.class);
 
         executor.execute(() -> {
@@ -82,21 +85,30 @@ public class RobotStrategy {
             return;
         }
 
-        int index = (int) (Math.random() * resultDto.getResults().size());
-        LocationDetailDto detailDto = resultDto.getResults().get(index);
-        LocationPoint locationPoint = detailDto.getLocation();
-        String travelId = UUID.randomUUID().toString().replace("-", "");
 
-        RedisTravekPlan plan = new RedisTravekPlan();
-        plan.setTravelId(travelId);
-        plan.setOrigin(robotInfo.getLoction());
-        plan.setDestination(new Point(locationPoint.getLat(), locationPoint.getLng()));
-        stringRedisTemplate.opsForValue().set(RedisKeyConstants.TRAVEL_PLAN_KEY, new Gson().toJson(plan));
-        log.info("开始旅行 地点:{},地址:{}",detailDto.getName(),detailDto.getAddress());
+        int i=5;
+        while (i>0){
+            i--;
+            int index = (int) (Math.random() * resultDto.getResults().size());
+            LocationDetailDto detailDto = resultDto.getResults().get(index);
+            LocationPoint locationPoint = detailDto.getLocation();
+            GeoResults<RedisGeoCommands.GeoLocation<Object>> getoResults = redisTemplate.opsForGeo().radius(RedisKeyConstants.TRAVEL_HISTORY_POINT_KEY, new Circle(locationPoint.getLng(), locationPoint.getLat(), 500));
+            if (Objects.isNull(getoResults)||CollectionUtils.isEmpty(getoResults.getContent())) {
+                String travelId = UUID.randomUUID().toString().replace("-", "");
+                RedisTravekPlan plan = new RedisTravekPlan();
+                plan.setTravelId(travelId);
+                plan.setOrigin(robotInfo.getLoction());
+                plan.setDestination(new Point(locationPoint.getLat(), locationPoint.getLng()));
+                stringRedisTemplate.opsForValue().set(RedisKeyConstants.TRAVEL_PLAN_KEY, new Gson().toJson(plan));
+                redisTemplate.opsForGeo().add(RedisKeyConstants.TRAVEL_HISTORY_POINT_KEY, new org.springframework.data.geo.Point(locationPoint.getLng(), locationPoint.getLat()), detailDto.getName());
+                log.info("开始旅行 地点:{},地址:{}", detailDto.getName(), detailDto.getAddress());
 
-        executor.execute(() -> {
-            travelPlanService.walk();
-        });
+                executor.execute(() -> {
+                    travelPlanService.walk();
+                });
+                break;
+            }
+        }
     }
 
     public void updateActionStatus(RedisRobotInfo redisRobotInfo) {
@@ -104,7 +116,7 @@ public class RobotStrategy {
             TimeUnit.SECONDS.sleep(5);
             blockingQueue.add(redisRobotInfo);
         } catch (InterruptedException e) {
-            log.error("",e);
+            log.error("", e);
         }
     }
 }

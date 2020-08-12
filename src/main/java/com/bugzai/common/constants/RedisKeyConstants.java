@@ -19,4 +19,11 @@ public class RedisKeyConstants {
     public static  String TRAVEL_PLAN_KEY="travel:plan:key:";
 
     public static String ROBOT_CURRENT_INFO_KEY="robot:current:info:";
+
+
+    /**
+     * 保留已经旅行过的地点坐标
+     */
+    public static  String TRAVEL_HISTORY_POINT_KEY="travel:history:point:list";
+
 }

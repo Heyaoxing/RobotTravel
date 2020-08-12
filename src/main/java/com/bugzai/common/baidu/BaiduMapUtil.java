@@ -10,11 +10,15 @@ import com.bugzai.common.dto.DriveTravalPlanResultDto;
 import com.bugzai.common.dto.LocationDto;
 import com.bugzai.common.dto.LocationResultDto;
 import com.google.gson.Gson;
+import org.apache.commons.codec.binary.Hex;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
+import sun.misc.BASE64Encoder;
 
 import java.io.FileOutputStream;
+import java.math.BigInteger;
+import java.security.MessageDigest;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -99,6 +103,7 @@ public class BaiduMapUtil {
      * @return
      */
     public PanoramaResultDto getPanorama(PanoramaDto dto) {
+        PanoramaResultDto resultDto=new PanoramaResultDto();
         Map<String, String> params=new HashMap<>();
         params.put("ak",appConfig.getBaiduMapAppkey());
         params.put("location",dto.getLocation().getLongitude()+","+dto.getLocation().getLatitude());
@@ -107,14 +112,16 @@ public class BaiduMapUtil {
         params.put("heading",dto.getHeading().toString());
 
         try {
-            byte[] bytes = HttpClientUtils.downLoad(appConfig.getBaiduPanoramaUrl(),"bbb.jpg",params);
-            FileOutputStream fout = new FileOutputStream("sss.jpeg");
-            //将字节写入文件
-            fout.write(bytes);
-            fout.close();
+            byte[] bytes = HttpClientUtils.downLoadToByte(appConfig.getBaiduPanoramaUrl(),params);
+            MessageDigest md = MessageDigest.getInstance("md5");
+            md.update(bytes);
+            resultDto.setByteMd5(new String(Hex.encodeHex(md.digest())));
+            BASE64Encoder encoder = new BASE64Encoder();
+            String base64 = encoder.encode(bytes);
+            resultDto.setImageBase64(base64);
         }catch (Exception e) {
             e.printStackTrace();
         }
-        return null;
+        return resultDto;
     }
 }

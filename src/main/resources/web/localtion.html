@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+	<style type="text/css">
+		body,
+		html,
+		#allmap {
+			width: 100%;
+			height: 100%;
+			overflow: hidden;
+			margin: 0;
+			font-family: "微软雅黑";
+		}
+	</style>
+	<script src="https://cdn.staticfile.org/jquery/2.0.0/jquery.min.js"></script>
+	<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=1Z9OQB4imRMCxTOERtZCXN9u6O1atlCH"></script>
+	<title>设置点的新图标</title>
+</head>
+
+<body>
+	<div id="allmap"></div>
+</body>
+
+</html>
+<script type="text/javascript">
+	// 百度地图API功能
+	var map = new BMap.Map("allmap");
+	map.enableScrollWheelZoom(true);
+
+
+
+
+	//多次定时
+	setInterval(function () {
+		$.ajax({
+			//请求方式
+			type: "GET",
+			//请求的媒体类型
+			contentType: "application/json;charset=UTF-8",
+			//请求地址
+			url: "http://127.0.0.1:8080/robot/getCurrentInfo",
+			//请求成功
+			success: function (result) {
+				var point = new BMap.Point(result.loction.longitude, result.loction.latitude);
+				map.centerAndZoom(point, 20);
+
+				//创建小狐狸
+				var pt = new BMap.Point(result.loction.longitude, result.loction.latitude);
+				var myIcon = new BMap.Icon("location.png", new BMap.Size(50, 50));
+				var marker2 = new BMap.Marker(pt, { icon: myIcon });  // 创建标注
+				map.addOverlay(marker2);              // 将标注添加到地图中
+			},
+			//请求失败，包含具体的错误信息
+			error: function (e) {
+				console.log(e.status);
+				console.log(e.responseText);
+			}
+		});
+	}, 5000);
+
+</script>

@@ -11,7 +11,7 @@ import java.util.Objects;
  * @Title: AbstractProcess.java
  * @Package com.bugzai.process
  * @Description: (用一句话描述该文件做什么)
- * @Author: 002954
+ * @Author:
  * @Date: 2020/7/6 16:03
  * @Version V1.0
  */

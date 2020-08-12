@@ -3,7 +3,7 @@ package com.bugzai.common.dto;
 import lombok.Data;
 
 /**
- * @Author: 002954
+ * @Author:
  */
 @Data
 public class DriveTravalPlanResultDto{

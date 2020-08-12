@@ -1,15 +1,22 @@
 package com.bugzai.common.utils;
 
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.http.Header;
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.*;
 import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
+import org.springframework.util.StringUtils;
 
 import java.io.*;
 import java.net.URISyntaxException;
@@ -315,13 +322,14 @@ public class HttpClientUtils {
 
     /**
      * 获取http的字节内容
+     *
      * @param url
      * @param params
      * @return
      * @throws IOException
      */
     public static byte[] doGetToByte(String url, Map<String, String> params) throws IOException, URISyntaxException {
-        return doGetToByte(url,null,params);
+        return doGetToByte(url, null, params);
     }
 
     public static byte[] doGetToByte(String url, Map<String, String> header, Map<String, String> params) throws IOException, URISyntaxException {
@@ -330,7 +338,6 @@ public class HttpClientUtils {
         CloseableHttpClient httpClient = HttpClients.createDefault();
 
         RequestConfig requestConfig = RequestConfig.custom().setConnectTimeout(CONNECT_TIMEOUT).setSocketTimeout(SOCKET_TIMEOUT).build();
-
 
 
         // 创建访问的地址
@@ -350,7 +357,7 @@ public class HttpClientUtils {
         // 装载配置信息
         httpGet.setConfig(requestConfig);
 
-        CloseableHttpResponse httpResponse=null;
+        CloseableHttpResponse httpResponse = null;
         try {
             // 发起请求
             httpResponse = httpClient.execute(httpGet);
@@ -388,12 +395,12 @@ public class HttpClientUtils {
 
     /**
      * 通过url下载图片保存到本地
+     *
      * @param urlString
-     * @param fileName
-     * @throws Exception
      * @return
+     * @throws Exception
      */
-    public static byte[] downLoad(String urlString, String fileName, Map<String,String> params) throws Exception {
+    public static byte[] downLoadToByte(String urlString, Map<String, String> params) throws Exception {
 
         URIBuilder uriBuilder = new URIBuilder(urlString);
         if (params != null) {
@@ -413,17 +420,97 @@ public class HttpClientUtils {
         byte[] bs = new byte[1024];
         // 读取到的数据长度
         int len;
-        // 输出的文件流
-        File file = new File(fileName);
-        FileOutputStream os = new FileOutputStream(file, true);
-        // 开始读取
-        while ((len = is.read(bs)) != -1) {
-            os.write(bs, 0, len);
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        try {
+            // 开始读取
+            while ((len = is.read(bs)) != -1) {
+                os.write(bs, 0, len);
+            }
+            return os.toByteArray();
+        } catch (Throwable e) {
+
+        } finally {
+            // 完毕，关闭所有链接
+            os.close();
+            is.close();
         }
-        // 完毕，关闭所有链接
-        os.close();
-        is.close();
         return bs;
     }
 
+    public static String doPostByJson(String uri, String postEntity){
+        try {
+            CloseableHttpClient httpClient = HttpClients.custom().build();
+            HttpResponse response=doPostByJson(httpClient,uri,postEntity);
+            return response.getStringResult();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static HttpResponse doPostByJson(CloseableHttpClient httpclient, String uri, String body, Header... headers)
+            throws ClientProtocolException, IOException{
+        return doPost(httpclient,uri,body, "UTF-8",headers);
+    }
+
+
+    public static HttpResponse doPost(CloseableHttpClient httpclient, String uri, String body, String charset, Header... headers)
+            throws ClientProtocolException, IOException {
+        String result = null;
+        HttpPost httpPost = new HttpPost(uri);
+        RequestConfig config = RequestConfig.custom()
+                .setSocketTimeout(SOCKET_TIMEOUT).setConnectTimeout(CONNECT_TIMEOUT).build();// 设置请求和传输超时
+        httpPost.setConfig(config);
+        httpPost.setHeaders(headers);
+
+        if (!StringUtils.isEmpty(body)) {
+            StringEntity entity = new StringEntity(body, charset);
+            httpPost.setEntity(entity);
+        }
+
+        long startTime = System.currentTimeMillis();
+        CloseableHttpResponse response = httpclient.execute(httpPost);
+        long costsMilliseconds = System.currentTimeMillis() - startTime;
+        int statusCode = response.getStatusLine().getStatusCode();
+        if (HttpStatus.SC_MOVED_PERMANENTLY == statusCode || HttpStatus.SC_MOVED_TEMPORARILY == statusCode || HttpStatus.SC_SEE_OTHER == statusCode) {
+            HttpGet httpGet = new HttpGet(response.getLastHeader("location").getValue());
+            response = httpclient.execute(httpGet);
+        }
+        HttpEntity entity = response.getEntity();
+        if (entity != null) {
+            result = EntityUtils.toString(entity, charset);
+        }
+
+        return new HttpResponse(statusCode, costsMilliseconds, result);
+    }
+
+
+}
+@Getter
+@Setter
+class HttpResponse implements Serializable {
+
+    /**
+     * http响应状态码
+     */
+    private int httpStatus;
+
+    /**
+     * 请求花费的毫秒数
+     */
+    private long costsMilliseconds;
+
+    /**
+     * String类型的result
+     */
+    private String stringResult;
+
+    public HttpResponse() {
+    }
+
+    public HttpResponse(int httpStatus, long costsMilliseconds, String stringResult) {
+        this.httpStatus = httpStatus;
+        this.costsMilliseconds = costsMilliseconds;
+        this.stringResult = stringResult;
+    }
 }
