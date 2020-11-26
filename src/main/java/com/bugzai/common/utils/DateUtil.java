@@ -270,4 +270,24 @@ public class DateUtil {
         }
     }
 
+
+    /**
+     * 获取两个时间分钟差
+     * @param sourceDate
+     * @param targetDate
+     * @return
+     */
+    public static long getSecondsBetween(Date sourceDate, Date targetDate) {
+        if (sourceDate.before(targetDate)) {
+            return 0;
+        } else {
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(sourceDate);
+            long sourceMill = cal.getTimeInMillis();
+            cal.setTime(targetDate);
+            long targetMill = cal.getTimeInMillis();
+            return (sourceMill - targetMill) /  1000;
+        }
+    }
+
 }

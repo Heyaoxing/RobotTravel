@@ -2,12 +2,14 @@ package com.bugzai;
 
 import com.bugzai.common.baidu.BaiduMapUtil;
 import com.bugzai.common.dto.*;
+import com.bugzai.common.utils.DateUtil;
 import com.bugzai.common.utils.HttpClientUtils;
 import com.bugzai.common.utils.WeatherUtil;
 import com.bugzai.service.TravelPlanService;
 import com.google.gson.Gson;
 import org.apache.http.protocol.HTTP;
 import org.junit.jupiter.api.Test;
+import org.junit.platform.commons.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -15,9 +17,7 @@ import org.springframework.http.MediaType;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @SpringBootTest
 class RobottravelApplicationTests {
@@ -52,11 +52,11 @@ class RobottravelApplicationTests {
     public void testPanorama() throws NoSuchAlgorithmException {
         PanoramaDto dto = new PanoramaDto();
         dto.setLocation(new Point(40.04778, 116.313393));
-        PanoramaResultDto resultDto =  baiduMapUtil.getPanorama(dto);
-        String temple ="{\"msgtype\":\"image\",\"image\":{\"base64\":\"%s\",\"md5\":\"%s\"}}";
-        String content=String.format(temple,resultDto.getImageBase64(),resultDto.getByteMd5());
-        String result= HttpClientUtils.doPostByJson("https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=305df922-5ab5-4870-9d13-6664f340c65b",content);
-        System.out.println(content+ result);
+        PanoramaResultDto resultDto = baiduMapUtil.getPanorama(dto);
+        String temple = "{\"msgtype\":\"image\",\"image\":{\"base64\":\"%s\",\"md5\":\"%s\"}}";
+        String content = String.format(temple, resultDto.getImageBase64(), resultDto.getByteMd5());
+        String result = HttpClientUtils.doPostByJson("https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=305df922-5ab5-4870-9d13-6664f340c65b", content);
+        System.out.println(content + result);
     }
 
     @Test
@@ -97,8 +97,19 @@ class RobottravelApplicationTests {
 
     @Test
     public void test() {
-        String travelId= UUID.randomUUID().toString().replace("-","");
-        System.out.println(travelId);
+        stringRedisTemplate.opsForSet().add("tta", "");
+        System.out.println(stringRedisTemplate.hasKey("tta"));
+        Set<String> sets = stringRedisTemplate.opsForSet().members("tta");
+        List<String> list= new ArrayList<>(sets);
+        list.removeIf(String::isEmpty);
+        System.out.println(new Gson().toJson(list));
+    }
+
+    @Test
+    public void test02(){
+        Date now=new Date();
+        Date after =new Date(2020,01,30);
+       System.out.println(DateUtil.getSecondsBetween(after,now));
     }
 
 }
